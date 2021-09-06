@@ -34,12 +34,15 @@ import sys
 import datetime
 import pandas as pd
 from tabulate import tabulate
+import os
+import locale
 
 
 #KEY GLOBAL VARAIBLRES 
 KEY =""
 RESPONSE_CODE =""
 SORT_KEY = ""
+LOCALE = ""
 headers =  {"Content-Type":"application/json"}
 api_url = "https://ancient-wood-1161.getsandbox.com:443/results"
 #getting response with headers
@@ -74,6 +77,9 @@ def main():
     count = len(sys.argv)
     if count == 2:
         KEY = sys.argv[1]
+        if KEY.lower() == "-h":
+            print ("usage : python3 main.py [sportResults] [sort_key]  [locale]")
+            quit()
         data[KEY].sort(key = lambda i: datetime.datetime.strptime(i["publicationDate"], "%b %d, %Y %I:%M:%S %p"), reverse = True)
         print_tabular_format_for_sport_type(data[KEY])
 
@@ -83,13 +89,26 @@ def main():
          SORT_KEY  = sys.argv[2]
          data[KEY].sort(key = lambda i: i[SORT_KEY], reverse = True)         
          print_tabular_format_for_sport_type(data[KEY])
-    else:
+    
+    elif count == 4:
+         KEY = sys.argv[1]
+         SORT_KEY  = sys.argv[2]
+         LOCALE  = sys.argv[3]
+         if not LOCALE.upper().endswith('UTF-8'):
+             LOCALE += '.UTF-8'
 
+         print("LOCALE:" + LOCALE.upper() )    
+         locale.setlocale(locale.LC_ALL,LOCALE.upper())
+         data[KEY].sort(key = lambda i: i[SORT_KEY], reverse = True)         
+         print_tabular_format_for_sport_type(data[KEY])
+    else:
+    
         for key in data.keys():
             print("*" * 20)
             print(key)
             print("*" * 20)
             print_tabular_format_for_sport_type(data[key])
+        print ("usage : python3 main.py [sportResults] [sort_key]  [locale]")
          
 
 
