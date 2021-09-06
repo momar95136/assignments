@@ -17,9 +17,11 @@ Tasks:
 
 import requests
 import json
+import sys
+import datetime
 
 
-
+key =""
 headers =  {"Content-Type":"application/json"}
 api_url = "https://ancient-wood-1161.getsandbox.com:443/results"
 #getting response with headers
@@ -42,11 +44,25 @@ def format_output(data):
 #print(response_code)
 def main():
     data = get_response(api_url, headers)
-    format_output(data)
+    if len(sys.argv) > 1:
+        key = sys.argv[1]
+        print("***{}***\n".format(key))
+        #.sort(key=lambda d: datetime.strftime(d, "%b %d, %Y %I:%M:%S %p"))
+        data[key].sort(key = lambda i: datetime.datetime.strptime(i["publicationDate"], "%b %d, %Y %I:%M:%S %p"), reverse = True)
+
+        debug(data, key)
+    else:
+        format_output(data)
+
+
+def debug(data,key):
+    print("=" * 20) 
+    print(json.dumps(data[key], indent=4, sort_keys=True))
+    print("=" * 20)
+    print("\n")
 
 #execute the module
 
 if __name__ == "__main__":
-    print("hello")
     main()
 
